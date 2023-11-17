@@ -3,6 +3,7 @@ import sys,os
 import Crypto
 from Crypto.Cipher import AES
 from settings import *
+import hmac, hashlib
 mode = AES.MODE_CBC
 
 def encrypt(plaintext, key, IV):
@@ -17,12 +18,25 @@ def decrypt(ciphertext, key):
     padding_length = plaintext[-1]
     return plaintext[:-padding_length]
 
+def generate_HMAC(key, message):
+    hash_function = hashlib.sha256
+    mac = hmac.new(key.encode('utf-8'), message.encode('utf-8'), hash_function)
+    return mac.digest()
+
+
 if __name__ == '__main__':
 
     if len(sys.argv) == 3 and sys.argv[1] == 'encrypt':
         plaintext = sys.argv[2]
         ciphertext = encrypt(plaintext, key, IV)
         print(ciphertext.hex())
+    elif len(sys.argv) == 3 and sys.argv[1] == 'HMAC':
+        plaintext = sys.argv[2]
+        HMAC = generate_HMAC(key, plaintext)
+        plaintext = plaintext + str(HMAC)
+        ciphertext = encrypt(plaintext, key, IV)
+        print(ciphertext.hex())
+        print(HMAC)
     elif len(sys.argv) == 3 and sys.argv[1] == 'decrypt':
         ciphertext = bytes.fromhex(sys.argv[2])
         plaintext = decrypt(ciphertext, key)
@@ -31,3 +45,4 @@ if __name__ == '__main__':
         print("Usage:")
         print("To encrypt: python aes_alt.py encrypt <message>")
         print("To decrypt: python aes_alt.py decrypt <ciphertext in hex>")
+        print("To encrypt with HMAC: python aes_alt.py HMAC <message")
