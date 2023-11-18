@@ -26,16 +26,23 @@ def check_HMAC(given_HMAC, data):
 def pkcs7_padding(data):
     pkcs7 = True
     last_byte_padding = data[-1]
+
+    # Check if the padding is out of range because one block only has 16 bytes
     if(last_byte_padding < 1 or last_byte_padding > 16):
       pkcs7 = False
+      # Error message (Type 1)
       message = "Invalid padding because {} is out of range (correct range: 1-16)".format(last_byte_padding)
     else:
+      # Padding is within range, so we iterate through the rest of the padding bytes
+      # to check for validity of PKCS #7 
       for i in range(0,last_byte_padding):
         if(last_byte_padding != data[-1-i]):
           pkcs7 = False
+          # Error message (Type 2)
           message = "Invalid padding {} is supposed to be this value, {}".format(data[-1-i], last_byte_padding)
           break
         else:
+          # Error message (Type 3)
           message = "Valid padding {} is {}.\n".format(data[-1-i], last_byte_padding)
     return pkcs7, message
 

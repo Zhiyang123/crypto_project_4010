@@ -7,15 +7,29 @@ import hmac, hashlib
 mode = AES.MODE_CBC
 
 def encrypt(plaintext, key, IV):
+    # creating the AES cipher with the key, mode of AES (cbc), IV (initialization vector)
+    # the key and IV would be encoded in 'utf-8' format
     cipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, IV.encode('utf-8'))
     length = 16 - (len(plaintext) % 16)
+
+    # the plaintext would be padded accordingly to PKCS #7
     plaintext += chr(length) * length
+
+    # the ciphertext would be returned
     return cipher.encrypt(plaintext.encode('utf-8'))
 
 def decrypt(ciphertext, key):
+    # creating the AES cipher with the key, mode of AES (cbc), IV (initialization vector)
+    # the key and IV would be encoded in 'utf-8' format
     cipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, IV.encode('utf-8'))
+
+    # the decrypted plaintext would consist of original message + padding
     plaintext = cipher.decrypt(ciphertext)
+
+    # extracting the number of padding applied to the message
     padding_length = plaintext[-1]
+
+    # returning only the original message
     return plaintext[:-padding_length]
 
 def generate_HMAC(key, message):
