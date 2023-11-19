@@ -39,16 +39,18 @@ def pkcs7_padding(data):
           message = "Valid padding {} is {}.\n".format(data[-1-i], last_byte_padding)
     return pkcs7, message
 
-# Ckeck validity of PKCS7 padding
+
 def pkcs7_HMAC_padding(data, hmac):
     pkcs7 = True
     last_byte_padding = data[-1]
+    #Initial check whether padding is valid (Padding bytes must be 1 ~ 16)
     if(last_byte_padding < 1 or last_byte_padding > 16):
       pkcs7 = False
       sent_message = "Invalid message"
       actual_message = "Invalid padding. {} not within 1 ~ 16.".format(last_byte_padding)
     else:
       for i in range(0,last_byte_padding):
+        #Check if PKCS7 padding is followed
         if(last_byte_padding != data[-1-i]):
           pkcs7 = False
           sent_message = "Invalid message"
@@ -57,6 +59,7 @@ def pkcs7_HMAC_padding(data, hmac):
         else:
           sent_message = "Invalid message"
           actual_message = "Valid padding. Guess: {} Actual: {}.\n".format(data[-1-i], last_byte_padding)
+    #If valid padding, check for HMAC
     if (pkcs7 == True):
       time.sleep(0.02)
       if (check_HMAC(hmac, data[-1-i])):

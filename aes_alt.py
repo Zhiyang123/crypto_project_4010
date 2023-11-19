@@ -18,6 +18,7 @@ def decrypt(ciphertext, key):
     padding_length = plaintext[-1]
     return plaintext[:-padding_length]
 
+#Generate HMAC using SHA256
 def generate_HMAC(key, message):
     hash_function = hashlib.sha256
     mac = hmac.new(key.encode('utf-8'), message.encode('utf-8'), hash_function)
