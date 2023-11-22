@@ -15,12 +15,8 @@ def decryption(encrypted):
 
 def generate_HMAC(key, message):
     hash_function = hashlib.sha256
-    mac = hmac.new(key.encode('utf-8'), message, hash_function)
+    mac = hmac.new(key.encode('utf-8'), repr(message).encode('utf-8'), hash_function)
     return mac.digest()
-
-def check_HMAC(given_HMAC, data):
-    return given_HMAC == generate_HMAC(key, data)
-
 
 # Ckeck validity of PKCS7 padding
 def pkcs7_padding(data):
@@ -69,7 +65,7 @@ def pkcs7_HMAC_padding(data, hmac):
     #If valid padding, check for HMAC
     if (pkcs7 == True):
       time.sleep(0.02)
-      if (check_HMAC(hmac, data[-1-i])):
+      if (hmac == generate_HMAC(key, data[-1-i])):
         sent_message = "Valid message"
         actual_message = "Valid padding. Guess: {} Actual: {}. HMAC check .\n".format(data[-1-i], last_byte_padding)
       else:
