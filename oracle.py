@@ -19,9 +19,9 @@ def generate_HMAC(key, message):
     return mac.digest()
 
 # Ckeck validity of PKCS7 padding
-def pkcs7_padding(data):
+def pkcs7_padding(data, padding):
     pkcs7 = True
-    last_byte_padding = data[-1]
+    last_byte_padding = padding
 
     # Check if the padding is out of range because one block only has 16 bytes
     if(last_byte_padding < 1 or last_byte_padding > 16):
@@ -43,9 +43,9 @@ def pkcs7_padding(data):
     return pkcs7, message
 
 
-def pkcs7_HMAC_padding(data, hmac):
+def pkcs7_HMAC_padding(data, hmac, padding):
     pkcs7 = True
-    last_byte_padding = data[-1]
+    last_byte_padding = padding
     #Initial check whether padding is valid (Padding bytes must be 1 ~ 16)
     if(last_byte_padding < 1 or last_byte_padding > 16):
       pkcs7 = False
@@ -74,8 +74,8 @@ def pkcs7_HMAC_padding(data, hmac):
     return sent_message, actual_message
 
 # Determine if the message is encrypted with valid PKCS7 padding
-def oracle_test(encrypted):
-    return pkcs7_padding(decryption(encrypted))
+def oracle_test(encrypted, padding):
+    return pkcs7_padding(decryption(encrypted), padding)
 
-def oracle_HMAC_test(encrypted, hmac):
-    return pkcs7_HMAC_padding(decryption(encrypted), hmac)
+def oracle_HMAC_test(encrypted, hmac, padding):
+    return pkcs7_HMAC_padding(decryption(encrypted), hmac, padding)
